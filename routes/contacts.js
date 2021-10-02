@@ -69,14 +69,66 @@ router.post(
    @access  Private
 */
 router.put("/:id", auth, async (req, res) => {
-  res.json({ msg: "Update Contacts" });
+  const { name, email, phone, type } = req.body;
+
+  // Build a contact object
+  const contactFields = {};
+  if (name) contactFields.name = name;
+  if (email) contactFields.email = email;
+  if (phone) contactFields.phone = phone;
+  if (type) contactFields.type = type;
+
+  try {
+    let contact = Contact.findById(req.params.id);
+    if (!contact)
+      return res.status(404).json({
+        msg: `No contact found by the id ${req.params.id} created by user ${req.user.id}`,
+      });
+    // Make sure {user} owns contact
+    if (contact.user.toString() !== req.user.id) {
+      return res.status(401).json({ msg: "Not Authorized" });
+    }
+
+    contact = await Contact.findByIdAndUpdate(
+      req.params.id,
+      // Update the fields with the contactFields
+      { $set: contactFields },
+      // If doesnt exist, create it instead
+      { new: true }
+    );
+
+    // Send back updated Contact
+    res.json(contact);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Something went wrong" });
+  }
 });
+
 /* @route   DELETE api/contacts/:id
    @desc    Remove { user } contact
    @access  Private
 */
 router.delete("/:id", auth, async (req, res) => {
-  res.json({ msg: "Delete Contacts" });
+  try {
+    let contact = Contact.findById(req.params.id);
+    if (!contact)
+      return res.status(404).json({
+        msg: `No contact found by the id ${req.params.id} created by user ${req.user.id}`,
+      });
+    // Make sure {user} owns contact
+    if (contact.user.toString() !== req.user.id) {
+      return res.status(401).json({ msg: "Not Authorized" });
+    }
+
+    await Contact.findByIdAndRemove(req.params.id);
+
+    // Send back updated Contact
+    res.status(200).json({ msg: "Contact Removed" });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: "Something went wrong" });
+  }
 });
 
 module.exports = router;

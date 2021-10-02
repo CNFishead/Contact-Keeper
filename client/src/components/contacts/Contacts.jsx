@@ -1,11 +1,19 @@
-import React from 'react'
+import React, { Fragment, useContext } from "react";
+import ContactContext from "../../context/contact/ContactContext";
+import ContactItem from "./ContactItem";
 
 const Contacts = () => {
-    return (
-        <div>
-            
-        </div>
-    )
-}
+  // init context
+  const contactContext = useContext(ContactContext);
+  const { contacts } = contactContext;
 
-export default Contacts
+  return (
+    <Fragment>
+      {contacts.map((contact, indx) => {
+        return <ContactItem key={contact.id + indx} contact={contact} />;
+      })}
+    </Fragment>
+  );
+};
+
+export default Contacts;

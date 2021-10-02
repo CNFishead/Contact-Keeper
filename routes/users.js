@@ -3,7 +3,9 @@ const express = require("express");
 const router = express.Router();
 // Validator
 const { check, validationResult } = require("express-validator/check");
-
+const bcyrpt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const config = require("config");
 const User = require("../models/User");
 
 //Create routes
@@ -21,7 +23,7 @@ router.post(
       "Please enter a password with 6 or more characters"
     ).isLength({ min: 6 }),
   ],
-  (req, res) => {
+  async (req, res) => {
     /* 
       validationResult takes in req as a param
       checks against all values denoted above
@@ -34,7 +36,57 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    res.send("passed");
+    // Destructure data coming form body
+    const { name, email, password } = req.body;
+
+    try {
+      // Search if user is already in the DB
+      let user = await User.findOne({ email });
+      if (user) {
+        return res.status(400).json({ msg: "User Already exists" });
+      }
+
+      // otherwise Instantiate a new { User }
+      user = new User({
+        name,
+        email,
+        password,
+      });
+
+      const salt = await bcyrpt.genSalt(10);
+      // take the new { user } and hash the password
+      user.password = await bcyrpt.hash(password, salt);
+
+      // Save
+      await user.save();
+      // Create payload, JWT
+      const payload = {
+        user: {
+          // Send the ID to the client, with this we will be able
+          // to access all contacts.
+          id: user._id,
+        },
+      };
+
+      // Sign a jwt token
+      jwt.sign(
+        payload,
+        config.get("jwtSecret"),
+        {
+          // Token Expires in an hour
+          expiresIn: 3600,
+        },
+        // callback function
+        // catch error, no error return token
+        (err, token) => {
+          if (err) throw err;
+          res.json({ token });
+        }
+      );
+    } catch (error) {
+      console.error(error.message);
+      res.satus(500).send("Server Error");
+    }
   }
 );
 

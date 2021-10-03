@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
+import ContactContext from "../../context/contact/ContactContext";
 
 const ContactItem = ({ contact }) => {
-  const [current, setCurrent] = useState({});
+  const { deleteContact, setCurrent, clearCurrent, current } =
+    useContext(ContactContext);
   const { id, name, email, phone, type } = contact;
 
   const onDelete = () => {
-    console.log("Deleted");
+    deleteContact(id);
+    if (current !== null && current.id === id) {
+      clearCurrent();
+    }
   };
+
   return (
     <div className="card bg-light">
       <h3 className="text-primary text-left">

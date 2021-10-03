@@ -12,6 +12,13 @@ import {
 // eslint-disable-next-line
 export default (state, action) => {
   switch (action.type) {
+    case USER_LOADED:
+      return {
+        ...state,
+        isAuthenticated: true,
+        loading: false,
+        user: action.payload,
+      };
     case REGISTER_SUCCESS:
       localStorage.setItem("token", action.payload.token);
       return {
@@ -21,6 +28,8 @@ export default (state, action) => {
         loading: false,
       };
     case REGISTER_FAIL:
+    case LOGIN_FAIL:
+    case AUTH_ERROR:
       localStorage.removeItem("token");
       return {
         ...state,
@@ -34,6 +43,14 @@ export default (state, action) => {
       return {
         ...state,
         error: null,
+      };
+    case LOGIN_SUCCESS:
+      localStorage.setItem("token", action.payload.token);
+      return {
+        ...state,
+        ...action.payload,
+        isAuthenticated: true,
+        loading: false,
       };
     default:
       return state;

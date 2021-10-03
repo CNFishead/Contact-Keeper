@@ -1,11 +1,28 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import authContext from "../../context/auth/AuthContext";
+import AlertContext from "../../context/alert/AlertContext";
+const Login = ({ history }) => {
+  const { login, isAuthenticated } = useContext(authContext);
+  const { setAlert, clearErrors, error } = useContext(AlertContext);
 
-const Login = () => {
+  useEffect(() => {
+    if (isAuthenticated) {
+      history.push("/");
+    }
+
+    if (error === "Invalid Credentials / User not found") {
+      setAlert(error, "danger");
+      clearErrors();
+    }
+    // eslint-disable-next-line
+  }, [error, isAuthenticated, history]);
+
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
-  const { name, email, password, password2 } = user;
+  const { email, password } = user;
 
   const onChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -13,7 +30,11 @@ const Login = () => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    console.log("Stuff");
+    if (email === "" || password === "") {
+      setAlert("Please enter email/password", "danger");
+    } else {
+      login({ email, password });
+    }
   };
 
   return (
@@ -24,15 +45,22 @@ const Login = () => {
       <form onSubmit={onSubmit}>
         <div className="form-group">
           <label htmlFor="email">Email</label>
-          <input type="text" name="email" value={email} onChange={onChange} />
+          <input
+            type="text"
+            name="email"
+            value={email}
+            onChange={onChange}
+            required
+          />
         </div>
         <div className="form-group">
           <label htmlFor="password">Password</label>
           <input
-            type="text"
+            type="password"
             name="password"
             value={password}
             onChange={onChange}
+            required
           />
         </div>
         <input
@@ -40,6 +68,9 @@ const Login = () => {
           value="Login"
           className="btn btn-primary btn-block"
         />
+        <p style={{ textAlign: "center" }}>
+          Not a member? <Link to="/register">Sign Up</Link>
+        </p>
       </form>
     </div>
   );

@@ -11,6 +11,7 @@ import {
   LOGOUT,
   CLEAR_ERRORS,
 } from "../types";
+import axios from "axios";
 
 const AuthState = (props) => {
   const initialState = {
@@ -24,15 +25,36 @@ const AuthState = (props) => {
 
   // Actions
   // Load User
-
+  const loadUser = () => {
+    console.log("Load User");
+  };
   // Register User
+  const register = async (formData) => {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    try {
+      const res = await axios.post("/api/users", formData, config);
+      dispatch({ type: REGISTER_SUCCESS, payload: res.data });
+    } catch (error) {
+      dispatch({ type: REGISTER_FAIL, payload: error.res.data.msg });
+    }
+  };
 
   // Login User
-
+  const login = () => {
+    console.log("login");
+  };
   // Logout
-
+  const logout = () => {
+    console.log("logout");
+  };
   // Clear Errors
-
+  const clearErrors = () => {
+    console.log("Clear Errors");
+  };
   return (
     <AuthContext.Provider
       value={{
@@ -41,6 +63,11 @@ const AuthState = (props) => {
         loading: state.loading,
         user: state.user,
         error: state.error,
+        login,
+        logout,
+        clearErrors,
+        loadUser,
+        register,
       }}
     >
       {props.children}

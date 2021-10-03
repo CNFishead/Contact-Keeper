@@ -5,12 +5,17 @@ import ContactFilter from "../contacts/ContactFilter";
 import AuthContext from "../../context/auth/AuthContext";
 
 const Home = ({ history }) => {
-  const { loadUser } = useContext(AuthContext);
+  const { isAuthenticated, loadUser } = useContext(AuthContext);
 
   useEffect(() => {
-    loadUser();
+    if (!isAuthenticated) {
+      history.push("/login");
+    } else {
+      loadUser();
+    }
+
     // eslint-disable-next-line
-  }, []);
+  }, [isAuthenticated]);
 
   return (
     <div className="grid-2">

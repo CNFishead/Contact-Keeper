@@ -1,16 +1,16 @@
 import React, { useContext } from "react";
+import PropTypes from "prop-types";
 import ContactContext from "../../context/contact/ContactContext";
 
 const ContactItem = ({ contact }) => {
-  const { deleteContact, setCurrent, clearCurrent, current } =
-    useContext(ContactContext);
-  const { id, name, email, phone, type } = contact;
+  const contactContext = useContext(ContactContext);
+  const { deleteContact, setCurrent, clearCurrent } = contactContext;
+
+  const { _id, name, email, phone, type } = contact;
 
   const onDelete = () => {
-    deleteContact(id);
-    if (current !== null && current.id === id) {
-      clearCurrent();
-    }
+    deleteContact(_id);
+    clearCurrent();
   };
 
   return (
@@ -52,6 +52,10 @@ const ContactItem = ({ contact }) => {
       </p>
     </div>
   );
+};
+
+ContactItem.propTypes = {
+  contact: PropTypes.object.isRequired,
 };
 
 export default ContactItem;

@@ -1,9 +1,11 @@
 import React, { Fragment, useContext } from "react";
 import { Link } from "react-router-dom";
 import authContext from "../../context/auth/AuthContext";
+import ContactContext from "../../context/contact/ContactContext";
 
 const Navbar = ({ title, icon }) => {
   const { isAuthenticated, logout, user } = useContext(authContext);
+  const { clearContacts } = useContext(ContactContext);
 
   return (
     <div className="navbar bg-primary">
@@ -27,7 +29,8 @@ const Navbar = ({ title, icon }) => {
           <Fragment>
             <li>Hello, {user && user.name} </li>
             <li>
-              <a href="#!" onClick={() => logout()}>
+              {/* eslint-disable-next-line */}
+              <a href="#!" onClick={() => (logout(), clearContacts())}>
                 <i className="fas fa-sign-out-alt"></i>{" "}
                 <span className="hide-sm">Logout</span>
               </a>

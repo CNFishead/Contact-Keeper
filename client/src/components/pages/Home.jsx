@@ -8,7 +8,7 @@ const Home = ({ history }) => {
   const { isAuthenticated, loadUser } = useContext(AuthContext);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isAuthenticated === false) {
       history.push("/login");
     } else {
       loadUser();

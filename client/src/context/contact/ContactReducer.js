@@ -8,6 +8,7 @@ import {
   CLEAR_FILTER,
   CONTACT_ERROR,
   GET_CONTACTS,
+  CLEAR_CONTACTS,
 } from "../types";
 
 // eslint-disable-next-line
@@ -30,6 +31,14 @@ export default (state, action) => {
           (contact) => contact._id !== action.payload
         ),
         loading: false,
+      };
+    case CLEAR_CONTACTS:
+      return {
+        ...state,
+        contacts: null,
+        filtered: null,
+        error: null,
+        current: null,
       };
     case SET_CURRENT:
       // Set current contact

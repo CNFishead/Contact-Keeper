@@ -71,7 +71,7 @@ router.post(
 router.put("/:id", auth, async (req, res) => {
   const { name, email, phone, type } = req.body;
 
-  // Build a contact object
+  // Build contact object
   const contactFields = {};
   if (name) contactFields.name = name;
   if (email) contactFields.email = email;
@@ -79,29 +79,25 @@ router.put("/:id", auth, async (req, res) => {
   if (type) contactFields.type = type;
 
   try {
-    let contact = Contact.findById(req.params.id);
-    if (!contact)
-      return res.status(404).json({
-        msg: `No contact found by the id ${req.params.id} created by user ${req.user.id}`,
-      });
-    // Make sure {user} owns contact
+    let contact = await Contact.findById(req.params.id);
+
+    if (!contact) return res.status(404).json({ msg: "Contact not found" });
+
+    // Make sure user owns contact
     if (contact.user.toString() !== req.user.id) {
-      return res.status(401).json({ msg: "Not Authorized" });
+      return res.status(401).json({ msg: "Not authorized" });
     }
 
     contact = await Contact.findByIdAndUpdate(
       req.params.id,
-      // Update the fields with the contactFields
       { $set: contactFields },
-      // If doesnt exist, create it instead
       { new: true }
     );
 
-    // Send back updated Contact
     res.json(contact);
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({ msg: "Something went wrong" });
+    res.status(500).send("Server Error");
   }
 });
 

@@ -58,7 +58,7 @@ export default (state, action) => {
         // This maps over all the contacts, checks for the one that is
         // the updated contact, changes that contact, returns all others.
         contacts: state.contacts.map((contact) =>
-          contact.id === action.payload.id ? action.payload : contact
+          contact._id === action.payload._id ? action.payload : contact
         ),
         loading: false,
       };

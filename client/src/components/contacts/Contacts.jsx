@@ -10,7 +10,9 @@ const Contacts = () => {
   const { contacts, filtered, getContacts, loading } = contactContext;
 
   useEffect(() => {
-    getContacts();
+    setTimeout(() => {
+      getContacts();
+    }, 1500);
     // eslint-disable-next-line
   }, []);
 

@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - ContactPage
+name: Build and deploy Node.js app to Azure Web App - contactpage
 
 on:
   push:
@@ -47,15 +47,13 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: node-app
-          
       - name: unzip artifact for deployment
         run: unzip release.zip
-        
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'ContactPage'
+          app-name: 'contactpage'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6EF979B1E466457884F809928811A60E }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_449E2F4EBC10430D874504122E16A10A }}
           package: .

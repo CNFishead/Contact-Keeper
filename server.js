@@ -11,15 +11,17 @@ connectDB();
 // using this allows us to accept body data
 app.use(express.json({ extended: false }));
 
-// Serve static assets in production
 if (process.env.NODE_ENV === "production") {
-  // Set static folder
-  app.use(express.static("client/build"));
-
+  app.use(express.static(path.join(__dirname, "/client/build")));
   app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"))
   );
+} else {
+  app.get("/", (req, res) => {
+    res.send("API is running...");
+  });
 }
+
 // Define Routes
 app.use("/api/users", require("./routes/users"));
 app.use("/api/auth", require("./routes/auth"));

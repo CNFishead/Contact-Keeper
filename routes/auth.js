@@ -1,34 +1,29 @@
-// Bring in Express
 const express = require("express");
 const router = express.Router();
-// Validator
-const { check, validationResult } = require("express-validator");
-const bcyrpt = require("bcryptjs");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("config");
-const User = require("../models/User");
-// Middleware
 const auth = require("../middleware/auth");
+const { check, validationResult } = require("express-validator");
 
-//Create routes
-/* @route   GET api/auth
-   @desc    Get logged in user
-   @access  Private
-*/
+const User = require("../models/User");
+
+// @route     GET api/auth
+// @desc      Get logged in user
+// @access    Private
 router.get("/", auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
     res.json(user);
-  } catch (e) {
-    console.error(e.message);
+  } catch (err) {
+    console.error(err.message);
     res.status(500).send("Server Error");
   }
 });
 
-/* @route   POST api/auth
-   @desc    Auth user & get Token
-   @access  Public
-*/
+// @route     POST api/auth
+// @desc      Auth user & get token
+// @access    Public
 router.post(
   "/",
   [
@@ -36,60 +31,45 @@ router.post(
     check("password", "Password is required").exists(),
   ],
   async (req, res) => {
-    /* 
-      validationResult takes in req as a param
-      checks against all values denoted above
-      IF errors is NOT empty (There is an error present)
-      return errors.
-      else: create new user
-    */
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    // destructure body
     const { email, password } = req.body;
 
     try {
       let user = await User.findOne({ email });
-      // Take in the plain text password, hash it, compare it against password in database.
-      // If its a match will return true.
-      const isMatch = await bcyrpt.compare(password, user.password);
 
-      if (!user || !isMatch) {
-        // We didnt find a {user}
-        return res
-          .status(404)
-          .json({ msg: "Invalid Credentials / User not found" });
+      if (!user) {
+        return res.status(400).json({ msg: "Invalid Credentials" });
       }
 
-      // Create payload, JWT
+      const isMatch = await bcrypt.compare(password, user.password);
+
+      if (!isMatch) {
+        return res.status(400).json({ msg: "Invalid Credentials" });
+      }
+
       const payload = {
         user: {
-          // Send the ID to the client, with this we will be able
-          // to access all contacts.
-          id: user._id,
+          id: user.id,
         },
       };
 
-      // Sign a jwt token
       jwt.sign(
         payload,
         config.get("jwtSecret"),
         {
-          // Token Expires in an hour
-          expiresIn: 3600,
+          expiresIn: 360000,
         },
-        // callback function
-        // catch error, no error return token
         (err, token) => {
           if (err) throw err;
           res.json({ token });
         }
       );
-    } catch (error) {
-      console.error(error.message);
+    } catch (err) {
+      console.error(err.message);
       res.status(500).send("Server Error");
     }
   }

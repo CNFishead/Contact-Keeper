@@ -1,22 +1,9 @@
-import React, { useContext, useEffect } from "react";
-import ContactForm from "../contacts/ContactForm";
+import React from "react";
 import Contacts from "../contacts/Contacts";
+import ContactForm from "../contacts/ContactForm";
 import ContactFilter from "../contacts/ContactFilter";
-import AuthContext from "../../context/auth/AuthContext";
 
-const Home = ({ history }) => {
-  const { isAuthenticated, loadUser } = useContext(AuthContext);
-
-  useEffect(() => {
-    if (isAuthenticated === false) {
-      history.push("/login");
-    } else {
-      loadUser();
-    }
-
-    // eslint-disable-next-line
-  }, [isAuthenticated]);
-
+const Home = () => {
   return (
     <div className="grid-2">
       <div>

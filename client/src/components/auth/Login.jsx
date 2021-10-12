@@ -1,39 +1,44 @@
-import React, { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import authContext from "../../context/auth/AuthContext";
+import React, { useState, useContext, useEffect } from "react";
+import AuthContext from "../../context/auth/AuthContext";
 import AlertContext from "../../context/alert/AlertContext";
-const Login = ({ history }) => {
-  const { login, isAuthenticated } = useContext(authContext);
-  const { setAlert, clearErrors, error } = useContext(AlertContext);
+
+const Login = (props) => {
+  const alertContext = useContext(AlertContext);
+  const authContext = useContext(AuthContext);
+
+  const { setAlert } = alertContext;
+  const { login, error, clearErrors, isAuthenticated } = authContext;
 
   useEffect(() => {
     if (isAuthenticated) {
-      history.push("/");
+      props.history.push("/");
     }
 
-    if (error === "Invalid Credentials / User not found") {
+    if (error === "Invalid Credentials") {
       setAlert(error, "danger");
       clearErrors();
     }
     // eslint-disable-next-line
-  }, [error, isAuthenticated, history]);
+  }, [error, isAuthenticated, props.history]);
 
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
+
   const { email, password } = user;
 
-  const onChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
-  };
+  const onChange = (e) => setUser({ ...user, [e.target.name]: e.target.value });
 
   const onSubmit = (e) => {
     e.preventDefault();
     if (email === "" || password === "") {
-      setAlert("Please enter email/password", "danger");
+      setAlert("Please fill in all fields", "danger");
     } else {
-      login({ email, password });
+      login({
+        email,
+        password,
+      });
     }
   };
 
@@ -44,9 +49,10 @@ const Login = ({ history }) => {
       </h1>
       <form onSubmit={onSubmit}>
         <div className="form-group">
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email">Email Address</label>
           <input
-            type="text"
+            id="email"
+            type="email"
             name="email"
             value={email}
             onChange={onChange}
@@ -56,6 +62,7 @@ const Login = ({ history }) => {
         <div className="form-group">
           <label htmlFor="password">Password</label>
           <input
+            id="password"
             type="password"
             name="password"
             value={password}
@@ -68,9 +75,6 @@ const Login = ({ history }) => {
           value="Login"
           className="btn btn-primary btn-block"
         />
-        <p style={{ textAlign: "center" }}>
-          Not a member? <Link to="/register">Sign Up</Link>
-        </p>
       </form>
     </div>
   );

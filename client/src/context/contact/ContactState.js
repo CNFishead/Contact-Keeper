@@ -17,7 +17,7 @@ import {
 
 const ContactState = (props) => {
   const initialState = {
-    contacts: null,
+    contacts: [],
     current: null,
     filtered: null,
     error: null,

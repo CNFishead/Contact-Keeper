@@ -27,10 +27,10 @@ const App = () => {
               <div className="container">
                 <Alerts />
                 <Switch>
-                  <Route exact path="/" component={Login} />
+                  <Route path="/login" component={Login} />
                   <Route path="/register" component={Register} />
                   <Route path="/about" component={About} />
-                  <Route path="/home" component={Home} />
+                  <Route exact path="/" component={Home} />
                 </Switch>
               </div>
             </Fragment>

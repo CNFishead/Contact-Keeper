@@ -10,7 +10,7 @@ const Navbar = ({ title, icon }) => {
   return (
     <div className="navbar bg-primary">
       <h1>
-        <Link to="/home">
+        <Link to="/">
           <i className={icon} /> {title}
         </Link>
       </h1>
@@ -18,7 +18,7 @@ const Navbar = ({ title, icon }) => {
         {!isAuthenticated && (
           <>
             <li>
-              <Link to="/">Login</Link>
+              <Link to="/login">Login</Link>
             </li>
             <li>
               <Link to="/register">Reigster</Link>
